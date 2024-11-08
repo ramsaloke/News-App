@@ -7,9 +7,9 @@ function App() {
   const [query, setQuery] = useState("");
   
   
-  const API_KEY = import.meta.env.VITE_API_KEY
-  const API_URL = import.meta.env.VITE_API_URL
-  const API_URL2 = import.meta.env.VITE_API_URL2
+  const API_KEY = import.meta.env.VITE_ITCOMING_API_KEY
+  const API_URL = import.meta.env.VITE_ITCOMING_API_URL
+  const API_URL2 = import.meta.env.VITE_ITCOMING_API_URL2
 
   useEffect(() => {
     fetchTopHeadlines();
