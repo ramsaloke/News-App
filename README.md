@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # React News App
 
@@ -49,3 +50,7 @@ VITE_API_KEY=your-newsapi-key
 
 License:
 This project is open-source and available under the MIT License.
+=======
+# News-App
+React News App: A simple React app that fetches top news headlines using NewsAPI. Includes a search feature, responsive design, and fallback handling for missing images or data. Built with React, Vite, and custom CSS for a clean and user-friendly interface.
+>>>>>>> 124a4c86855cdb56d9916e7456242bbcd72bbe50
