@@ -5,79 +5,34 @@ function App() {
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState("");
 
-  // API key
-  const API_KEY = "758fc8ae73894eea9abf6698ac0eef24";
+  const API_KEY =import.meta.env.VITE_API_KEY;
 
-  // Fetch top headlines on initial load
   useEffect(() => {
     fetchTopHeadlines();
   }, []);
 
-  // Function to fetch top headlines
   const fetchTopHeadlines = async () => {
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`,
-        {
-          headers: {
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-          },
-        }
+        `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`
       );
-
-      // Check for HTTP 426 or other errors
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       const data = await response.json();
-
-      // Set articles if data exists
-      if (data?.articles?.length > 0) {
-        setArticles(data.articles);
-      } else {
-        console.error("No articles found or invalid response:", data);
-        setArticles([]);
-      }
+      setArticles(data.articles);
     } catch (error) {
       console.error("Error fetching top headlines:", error);
-      setArticles([]); // Reset articles if there's an error
     }
   };
 
-  // Function to fetch articles based on query search
   const fetchArticlesByQuery = async () => {
     if (!query.trim()) return;
-
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=12&apiKey=${API_KEY}`,
-        {
-          headers: {
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-          },
-        }
+        `https://newsapi.org/v2/everything?q=${query}&pageSize=12&apiKey=${API_KEY}`
       );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
       const data = await response.json();
-
-      if (data?.articles?.length > 0) {
-        setArticles(data.articles);
-      } else {
-        console.error("No articles found or invalid response:", data);
-        setArticles([]);
-      }
+      setArticles(data.articles);
     } catch (error) {
       console.error("Error with search query:", error);
-      setArticles([]);
     }
   };
 
@@ -91,7 +46,7 @@ function App() {
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search news here..."
+              placeholder="Search news here.."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               id="search-input"
@@ -102,35 +57,27 @@ function App() {
           </div>
         </div>
       </nav>
-
       <main id="blog-container" className="obj-width">
         {articles.length > 0 ? (
           articles.map((article, index) => (
-            <div
-              key={index}
-              className="blog-card"
-              onClick={() => window.open(article.url, "_blank")}
-            >
+            <div key={index} className="blog-card">
               <img
-                src={article.urlToImage || "https://via.placeholder.com/150"}
-                alt={article.title || "Article Image"}
+                src={article.urlToImage || "https://placehold.co/600x400"}
+                alt={article.title}
               />
               <h2>
-                {article.title?.length > 30
+                {article.title.length > 30
                   ? `${article.title.slice(0, 30)}...`
-                  : article.title || "No title available"}
+                  : article.title}
               </h2>
               <p>
-                {article.description?.length > 100
+                {article.description && article.description.length > 100
                   ? `${article.description.slice(0, 100)}...`
-                  : article.description || "No description available."}
+                  : article.description}
               </p>
               <button
                 className="read-more-btn"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent double click action
-                  window.open(article.url, "_blank");
-                }}
+                onClick={() => window.open(article.url, "_blank")}
               >
                 Read More
               </button>
