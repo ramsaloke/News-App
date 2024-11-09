@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import "./App.css";
 
@@ -6,9 +5,8 @@ function App() {
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState("");
   
-  
-  const API_KEY = import.meta.env.VITE_API_KEY
-  
+  // Directly using the API key
+  const API_KEY = "758fc8ae73894eea9abf6698ac0eef24";
 
   useEffect(() => {
     fetchTopHeadlines();
@@ -17,7 +15,7 @@ function App() {
   const fetchTopHeadlines = async () => {
     try {
       const response = await fetch(
-       `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apikey=${API_KEY}`
+        `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`
       );
       const data = await response.json();
       setArticles(data.articles);
@@ -30,7 +28,7 @@ function App() {
     if (!query.trim()) return;
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/everything?q=${query}&pageSize=12&apikey=${API_KEY}`
+        `https://newsapi.org/v2/everything?q=${query}&pageSize=12&apiKey=${API_KEY}`
       );
       const data = await response.json();
       setArticles(data.articles);
@@ -78,13 +76,15 @@ function App() {
                   : article.title}
               </h2>
               <p>
-              {article.description && article.description.length > 100
-  ? `${article.description.slice(0, 100)}...`
-  : article.description}
-
+                {article.description && article.description.length > 100
+                  ? `${article.description.slice(0, 100)}...`
+                  : article.description}
                 <button
                   className="read-more-btn"
-                  onClick={() => window.open(article.url, "_blank")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(article.url, "_blank");
+                  }}
                 >
                   Read More
                 </button>
