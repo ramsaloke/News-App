@@ -4,36 +4,66 @@ import "./App.css";
 function App() {
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState("");
-  
+
   // Directly using the API key
   const API_KEY = "758fc8ae73894eea9abf6698ac0eef24";
 
+  // Fetch top headlines on initial load
   useEffect(() => {
     fetchTopHeadlines();
   }, []);
 
+  // Function to fetch top headlines
   const fetchTopHeadlines = async () => {
     try {
       const response = await fetch(
         `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`
       );
+
+      // Check if the response is okay
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setArticles(data.articles);
+
+      // Safely set articles if data exists
+      if (data && data.articles) {
+        setArticles(data.articles);
+      } else {
+        console.error("No articles found or invalid response:", data);
+        setArticles([]);
+      }
     } catch (error) {
       console.error("Error fetching top headlines:", error);
+      setArticles([]); // Reset articles if there's an error
     }
   };
 
+  // Function to fetch articles based on query search
   const fetchArticlesByQuery = async () => {
     if (!query.trim()) return;
+
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/everything?q=${query}&pageSize=12&apiKey=${API_KEY}`
+        `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=12&apiKey=${API_KEY}`
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setArticles(data.articles);
+
+      if (data && data.articles) {
+        setArticles(data.articles);
+      } else {
+        console.error("No articles found or invalid response:", data);
+        setArticles([]);
+      }
     } catch (error) {
       console.error("Error with search query:", error);
+      setArticles([]); // Reset articles if there's an error
     }
   };
 
@@ -47,7 +77,7 @@ function App() {
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search news here.."
+              placeholder="Search news here..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               id="search-input"
@@ -58,6 +88,7 @@ function App() {
           </div>
         </div>
       </nav>
+
       <main id="blog-container" className="obj-width">
         {articles.length > 0 ? (
           articles.map((article, index) => (
@@ -67,28 +98,28 @@ function App() {
               onClick={() => window.open(article.url, "_blank")}
             >
               <img
-                src={article.urlToImage || "https://plus.unsplash.com/premium_photo-1691223714882-57a432c4edaf?q=80&w=1781&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
-                alt={article.title}
+                src={article.urlToImage || "https://via.placeholder.com/150"}
+                alt={article.title || "Article Image"}
               />
               <h2>
-                {article.title.length > 30
+                {article.title && article.title.length > 30
                   ? `${article.title.slice(0, 30)}...`
                   : article.title}
               </h2>
               <p>
                 {article.description && article.description.length > 100
                   ? `${article.description.slice(0, 100)}...`
-                  : article.description}
-                <button
-                  className="read-more-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(article.url, "_blank");
-                  }}
-                >
-                  Read More
-                </button>
+                  : article.description || "No description available."}
               </p>
+              <button
+                className="read-more-btn"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent opening the article twice
+                  window.open(article.url, "_blank");
+                }}
+              >
+                Read More
+              </button>
             </div>
           ))
         ) : (
