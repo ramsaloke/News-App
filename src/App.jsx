@@ -5,7 +5,7 @@ function App() {
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState("");
 
-  // Directly using the API key
+  // API key
   const API_KEY = "758fc8ae73894eea9abf6698ac0eef24";
 
   // Fetch top headlines on initial load
@@ -17,18 +17,25 @@ function App() {
   const fetchTopHeadlines = async () => {
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`
+        `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apiKey=${API_KEY}`,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      // Check if the response is okay
+      // Check for HTTP 426 or other errors
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
 
-      // Safely set articles if data exists
-      if (data && data.articles) {
+      // Set articles if data exists
+      if (data?.articles?.length > 0) {
         setArticles(data.articles);
       } else {
         console.error("No articles found or invalid response:", data);
@@ -46,7 +53,14 @@ function App() {
 
     try {
       const response = await fetch(
-        `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=12&apiKey=${API_KEY}`
+        `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&pageSize=12&apiKey=${API_KEY}`,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (!response.ok) {
@@ -55,7 +69,7 @@ function App() {
 
       const data = await response.json();
 
-      if (data && data.articles) {
+      if (data?.articles?.length > 0) {
         setArticles(data.articles);
       } else {
         console.error("No articles found or invalid response:", data);
@@ -63,7 +77,7 @@ function App() {
       }
     } catch (error) {
       console.error("Error with search query:", error);
-      setArticles([]); // Reset articles if there's an error
+      setArticles([]);
     }
   };
 
@@ -102,19 +116,19 @@ function App() {
                 alt={article.title || "Article Image"}
               />
               <h2>
-                {article.title && article.title.length > 30
+                {article.title?.length > 30
                   ? `${article.title.slice(0, 30)}...`
-                  : article.title}
+                  : article.title || "No title available"}
               </h2>
               <p>
-                {article.description && article.description.length > 100
+                {article.description?.length > 100
                   ? `${article.description.slice(0, 100)}...`
                   : article.description || "No description available."}
               </p>
               <button
                 className="read-more-btn"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent opening the article twice
+                  e.stopPropagation(); // Prevent double click action
                   window.open(article.url, "_blank");
                 }}
               >
