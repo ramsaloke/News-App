@@ -7,9 +7,8 @@ function App() {
   const [query, setQuery] = useState("");
   
   
-  const API_KEY = import.meta.env.VITE_ITCOMING_API_KEY
-  const API_URL = import.meta.env.VITE_ITCOMING_API_URL
-  const API_URL2 = import.meta.env.VITE_ITCOMING_API_URL2
+  const API_KEY = import.meta.env.VITE_API_KEY
+  
 
   useEffect(() => {
     fetchTopHeadlines();
@@ -18,7 +17,7 @@ function App() {
   const fetchTopHeadlines = async () => {
     try {
       const response = await fetch(
-        `${API_URL}?country=us&pageSize=12&apiKey=${API_KEY}`
+       `https://newsapi.org/v2/top-headlines?country=us&pageSize=12&apikey=${API_KEY}`
       );
       const data = await response.json();
       setArticles(data.articles);
@@ -31,7 +30,7 @@ function App() {
     if (!query.trim()) return;
     try {
       const response = await fetch(
-        `${API_URL2}?q=${query}&pageSize=12&apiKey=${API_KEY}`
+        `https://newsapi.org/v2/everything?q=${query}&pageSize=12&apikey=${API_KEY}`
       );
       const data = await response.json();
       setArticles(data.articles);
@@ -79,9 +78,10 @@ function App() {
                   : article.title}
               </h2>
               <p>
-                {article.description > 100
-                  ? `${article.description.slice(0, 100)}...`
-                  : article.description}
+              {article.description && article.description.length > 100
+  ? `${article.description.slice(0, 100)}...`
+  : article.description}
+
                 <button
                   className="read-more-btn"
                   onClick={() => window.open(article.url, "_blank")}
